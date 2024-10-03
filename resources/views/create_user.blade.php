@@ -1,92 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create User</title>
-
+    <title>Form Data Mahasiswa</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f3f4f6; /* Warna latar belakang yang lebih lembut */
-        }
-
-        .animated-bg {
-            background: linear-gradient(270deg, #6a11cb, #2575fc);
-            background-size: 400% 400%;
-            animation: gradientAnimation 10s ease infinite;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1; /* Pastikan latar belakang berada di belakang konten */
-        }
-
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Gaya khusus untuk ikon dan tombol */
-        .icon {
-            color: #6a11cb; /* Warna ikon */
-        }
-    </style>
 </head>
+<body class="min-h-screen bg-gradient-to-r from-gray-700 via-blue-800 to-black flex items-center justify-center">
 
-<body class="animated-bg flex items-center justify-center min-h-screen">
+    <div class="bg-gray-900 bg-opacity-95 p-10 rounded-xl shadow-2xl w-full max-w-lg">
+        <h1 class="text-4xl font-extrabold text-center mb-10 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-gray-400">
+            Form Data Mahasiswa
+        </h1>
 
-    <form action="{{ route('user.store') }}" method="POST" class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md relative">
-        @csrf
+        <form action="{{ route('user.store') }}" method="POST">
+            @csrf
 
-        <div class="absolute top-[-50px] left-[50%] transform -translate-x-[50%] bg-white rounded-full p-3 shadow-md">
-            <i class="fas fa-user-plus icon text-4xl"></i>
-        </div>
-
-        <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">Create User</h2>
-
-        <div class="mb-6">
-            <label for="nama" class="block text-gray-700 mb-2 font-medium">Nama:</label>
-            <div class="flex items-center border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-purple-500">
-                <span class="px-3 text-gray-500">
-                    <i class="fas fa-user icon"></i>
-                </span>
-                <input type="text" id="nama" name="nama" class="w-full px-3 py-2 focus:outline-none rounded-r-lg" placeholder="Masukkan nama" required>
+            <!-- Input Nama -->
+            <div class="mb-6">
+                <label for="nama" class="block text-gray-300 text-sm font-semibold mb-2">Nama:</label>
+                <input type="text" name="nama" id="nama" class="w-full p-3 bg-gray-800 text-gray-200 border border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Masukkan nama Anda" value="{{ old('nama') }}">
+                @error('nama')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
-        </div>
 
-        <div class="mb-6">
-            <label for="npm" class="block text-gray-700 mb-2 font-medium">NPM:</label>
-            <div class="flex items-center border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-purple-500">
-                <span class="px-3 text-gray-500">
-                    <i class="fas fa-id-card icon"></i>
-                </span>
-                <input type="text" id="npm" name="npm" class="w-full px-3 py-2 focus:outline-none rounded-r-lg" placeholder="Masukkan NPM" required>
+            <!-- Input NPM -->
+            <div class="mb-6">
+                <label for="npm" class="block text-gray-300 text-sm font-semibold mb-2">NPM:</label>
+                <input type="text" name="npm" id="npm" class="w-full p-3 bg-gray-800 text-gray-200 border border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Masukkan NPM Anda" value="{{ old('npm') }}">
+                @error('npm')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
-        </div>
 
-        <div class="mb-6">
-            <label for="kelas" class="block text-gray-700 mb-2 font-medium">Kelas:</label>
-            <div class="flex items-center border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-purple-500">
-                <span class="px-3 text-gray-500">
-                    <i class="fas fa-school icon"></i>
-                </span>
-                <input type="text" id="kelas" name="kelas" class="w-full px-3 py-2 focus:outline-none rounded-r-lg" placeholder="Masukkan kelas" required>
+            <!-- Input Kelas -->
+            <div class="mb-6">
+                <label for="kelas_id" class="block text-gray-300 text-sm font-semibold mb-2">Kelas:</label>
+                <select name="kelas_id" id="kelas_id" class="w-full p-3 bg-gray-800 text-gray-200 border border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    <option value="">Pilih Kelas</option>
+                    @foreach ($kelas as $kelasItem)
+                        <option value="{{ $kelasItem->id }}" {{ old('kelas_id') == $kelasItem->id ? 'selected' : '' }}>
+                            {{ $kelasItem->nama_kelas }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('kelas_id')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
-        </div>
 
-        <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 transition ease-in-out duration-300">
-            <i class="fas fa-paper-plane"></i> Submit
-        </button>
-    </form>
+            <!-- Tombol Submit -->
+            <div class="flex justify-center mt-10">
+                <button type="submit" class="bg-gradient-to-r from-blue-600 to-gray-600 text-white font-bold px-8 py-3 rounded-full shadow-lg hover:from-blue-700 hover:to-gray-700 transition-all duration-300 transform hover:scale-105">
+                    Simpan Data
+                </button>
+            </div>
+        </form>
+    </div>
 
 </body>
-
 </html>
