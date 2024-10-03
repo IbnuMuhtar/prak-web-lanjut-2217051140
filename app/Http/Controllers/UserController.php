@@ -3,54 +3,70 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Kelas;
 use App\Models\UserModel;
-
+use App\Models\Kelas;
 
 class UserController extends Controller
 {
-    public function profile($nama = '', $kelas = '', $npm = '')
-    {
+    public $userModel;
+    public $kelasModel;
+
+    public function __construct() 
+    { 
+        $this->userModel = new UserModel(); 
+        $this->kelasModel = new Kelas(); 
+    }
+
+    // Method untuk menampilkan halaman create user
+    public function create() 
+    { 
+        $kelas = $this->kelasModel->all(); // Mendapatkan semua data kelas
         $data = [
-            'nama' => $nama,
+            'title' => 'Create User',
             'kelas' => $kelas,
-            'npm' => $npm,
         ];
-
-        return view('profile', $data);
+        return view('create_user', $data); 
     }
 
-    public function create() {
-        return view('create_user', [
-            'kelas'=>Kelas::all(),
-        ]);
-    }
-
-    public function store(Request $request)
-    {
+    // Method untuk menyimpan data pengguna
+    public function store(Request $request) 
+    { 
         // Validasi input dari form
         $validatedData = $request->validate([
             'nama' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255',
             'npm' => 'required|digits:10',
             'kelas_id' => 'required|exists:kelas,id',
-        ], [
-            'nama.regex' => 'Nama hanya boleh mengandung huruf.',
-            'npm.digits' => 'NPM harus 10 digit angka.',
-            'kelas_id.required' => 'Kelas harus dipilih.',
         ]);
-    
-        // Simpan data mahasiswa ke database
-        $user = UserModel::create($validatedData);
-    
-        // Muat data relasi kelas
-        $user->load('kelas');
-    
-        // Redirect ke halaman profil dengan parameter nama, npm, dan kelas yang baru saja disimpan
-        return redirect()->route('user.profile', [
-            'nama' => $user->nama,
-            'npm' => $user->npm,
-            'kelas' => $user->kelas->nama_kelas ?? 'Kelas tidak ditemukan',
-        ]);
+
+        // Simpan data pengguna ke database
+        $this->userModel->create($validatedData); 
+
+        // Redirect ke halaman /users setelah menyimpan data
+        return redirect()->to('/users'); 
     }
-    
+
+    // Method untuk menampilkan daftar pengguna
+    public function index() 
+    { 
+        $users = $this->userModel->getUser(); // Mengambil semua data pengguna dengan join ke kelas
+        return view('list_user', ['users' => $users]); 
+    }
+
+    // Method untuk mengedit pengguna
+    public function edit($id) 
+    {
+        // Logic untuk mengedit pengguna (jika diperlukan)
+    }
+
+    // Method untuk mengupdate pengguna
+    public function update(Request $request, $id) 
+    {
+        // Logic untuk memperbarui data pengguna (jika diperlukan)
+    }
+
+    // Method untuk menghapus pengguna
+    public function destroy($id) 
+    {
+        // Logic untuk menghapus pengguna (jika diperlukan)
+    }
 }
