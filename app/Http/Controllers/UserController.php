@@ -3,70 +3,106 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\UserModel;
 use App\Models\Kelas;
+use App\Models\UserModel;
 
 class UserController extends Controller
 {
-    public $userModel;
-    public $kelasModel;
+    protected $userModel;
+    protected $kelasModel;
 
-    public function __construct() 
-    { 
-        $this->userModel = new UserModel(); 
-        $this->kelasModel = new Kelas(); 
+    public function __construct()
+    {
+        $this->userModel = new UserModel();
+        $this->kelasModel = new Kelas();
     }
 
-    // Method untuk menampilkan halaman create user
-    public function create() 
-    { 
-        $kelas = $this->kelasModel->all(); // Mendapatkan semua data kelas
+    public function index()
+    {
+        // Mengambil data user dan mengurutkan berdasarkan nama
+        $users = $this->userModel->orderBy('nama', 'asc')->get();
+        
+        $data = [
+            'title' => 'List User',
+            'users' => $users,
+        ];
+
+        return view('list_user', $data);
+    }
+
+    public function profile($nama = '', $kelas = '', $npm = '', $foto ='')
+    {
+        $data = [
+            'nama' => $nama,
+            'kelas' => $kelas,
+            'npm' => $npm,
+            'foto' => $foto,
+        ];
+
+        return view('profile', $data);
+    }
+
+    public function create()
+    {
+        $kelas = $this->kelasModel->getKelas();
+
         $data = [
             'title' => 'Create User',
             'kelas' => $kelas,
         ];
-        return view('create_user', $data); 
+
+        return view('create_user', $data);
     }
 
-    // Method untuk menyimpan data pengguna
-    public function store(Request $request) 
-    { 
-        // Validasi input dari form
+    public function store(Request $request)
+    {
+        // Validasi input
         $validatedData = $request->validate([
             'nama' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255',
             'npm' => 'required|digits:10',
             'kelas_id' => 'required|exists:kelas,id',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
+        ], [
+            'nama.regex' => 'Nama hanya boleh mengandung huruf.',
+            'npm.digits' => 'NPM harus 10 digit angka.',
+            'kelas_id.required' => 'Kelas harus dipilih.',
         ]);
 
-        // Simpan data pengguna ke database
-        $this->userModel->create($validatedData); 
+        // Meng-handle upload foto
+        if ($request->hasFile('foto')) {
+            $foto = $request->file('foto');
+            
+            // Membuat nama file acak dengan extension asli
+            $randomName = uniqid() . '.' . $foto->getClientOriginalExtension();
+            
+            // Menyimpan file di folder 'public/uploads/img'
+            $foto->move(public_path('uploads/img'), $randomName);
+            
+            // Menyimpan path foto ke database
+            $validatedData['foto'] = 'uploads/img/' . $randomName;
+        } else {
+            // Jika tidak ada file yang di-upload, gunakan path default
+            $validatedData['foto'] = 'assets/img/default.png';
+        }
 
-        // Redirect ke halaman /users setelah menyimpan data
-        return redirect()->to('/users'); 
+        // Menyimpan data pengguna ke database
+        $user = $this->userModel->create($validatedData);
+
+        // Memuat relasi kelas dari model user
+        $user->load('kelas');
+
+        // Redirect ke halaman user dengan pesan sukses
+        return redirect()->to('/user')->with('success', 'User berhasil ditambahkan');
     }
 
-    // Method untuk menampilkan daftar pengguna
-    public function index() 
-    { 
-        $users = $this->userModel->getUser(); // Mengambil semua data pengguna dengan join ke kelas
-        return view('list_user', ['users' => $users]); 
-    }
-
-    // Method untuk mengedit pengguna
-    public function edit($id) 
-    {
-        // Logic untuk mengedit pengguna (jika diperlukan)
-    }
-
-    // Method untuk mengupdate pengguna
-    public function update(Request $request, $id) 
-    {
-        // Logic untuk memperbarui data pengguna (jika diperlukan)
-    }
-
-    // Method untuk menghapus pengguna
-    public function destroy($id) 
-    {
-        // Logic untuk menghapus pengguna (jika diperlukan)
-    }
+    public function show($id){
+        $user = $this->userModel->getUser($id);
+    
+        $data = [
+            'title' => 'Profile',
+            'user'  => $user,
+        ];
+    
+        return view('profile', $data);
+    }    
 }

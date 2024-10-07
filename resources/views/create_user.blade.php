@@ -1,37 +1,33 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-r from-gray-700 via-blue-800 to-black flex items-center justify-center">
-    <div class="bg-gray-900 bg-opacity-95 p-10 rounded-xl shadow-2xl w-full max-w-lg">
-        <h1 class="text-3xl font-extrabold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-gray-400">
-            Form Data Mahasiswa
-        </h1>
-
-        <form action="{{ route('user.store') }}" method="POST">
+<div class="min-vh-100 d-flex justify-content-center align-items-center">
+    <div class="card p-4 shadow-lg w-100" style="max-width: 500px; background-color: rgba(13, 49, 111, 0.8); border-radius: 10px; border: 2px solid #82000f;">
+        <form action="{{ route('user.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <!-- Input Nama -->
-            <div class="mb-4">
-                <label for="nama" class="block text-gray-300 text-sm font-semibold mb-2">Nama:</label>
-                <input type="text" name="nama" id="nama" class="w-full p-3 bg-gray-800 text-gray-200 border border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Masukkan nama Anda" value="{{ old('nama') }}">
+            <div class="mb-3">
+                <label for="nama" class="form-label text-light">Nama:</label>
+                <input type="text" name="nama" id="nama" class="form-control" placeholder="Masukkan Nama Anda" value="{{ old('nama') }}" style="background-color: #82000f; color: #fff;">
                 @error('nama')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <div class="text-danger mt-1">{{ $message }}</div>
                 @enderror
             </div>
 
             <!-- Input NPM -->
-            <div class="mb-4">
-                <label for="npm" class="block text-gray-300 text-sm font-semibold mb-2">NPM:</label>
-                <input type="text" name="npm" id="npm" class="w-full p-3 bg-gray-800 text-gray-200 border border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Masukkan NPM Anda" value="{{ old('npm') }}">
+            <div class="mb-3">
+                <label for="npm" class="form-label text-light">NPM:</label>
+                <input type="text" name="npm" id="npm" class="form-control" placeholder="Masukkan NPM Anda" value="{{ old('npm') }}" style="background-color: #82000f; color: #fff;">
                 @error('npm')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <div class="text-danger mt-1">{{ $message }}</div>
                 @enderror
             </div>
 
             <!-- Input Kelas -->
-            <div class="mb-4">
-                <label for="kelas_id" class="block text-gray-300 text-sm font-semibold mb-2">Kelas:</label>
-                <select name="kelas_id" id="kelas_id" class="w-full p-3 bg-gray-800 text-gray-200 border border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+            <div class="mb-3">
+                <label for="kelas_id" class="form-label text-light">Kelas:</label>
+                <select name="kelas_id" id="kelas_id" class="form-select" required style="background-color: #0d316f; color: #fff;">
                     <option value="">Pilih Kelas</option>
                     @foreach ($kelas as $kelasItem)
                         <option value="{{ $kelasItem->id }}" {{ old('kelas_id') == $kelasItem->id ? 'selected' : '' }}>
@@ -40,15 +36,18 @@
                     @endforeach
                 </select>
                 @error('kelas_id')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <div class="text-danger mt-1">{{ $message }}</div>
                 @enderror
             </div>
 
+            <div class="mb-3">
+                <label for="foto" class="form-label text-light">Foto:</label><br>
+                <input type="file" id="foto" name="foto" style="border: 2px solid #ffcc00; padding: 10px; border-radius: 5px; background-color: #f9f9f9;">
+            </div>
+
             <!-- Tombol Submit -->
-            <div class="flex justify-center mt-6">
-                <button type="submit" class="bg-gradient-to-r from-blue-600 to-gray-600 text-white font-bold px-6 py-2 rounded-full shadow-lg hover:from-blue-700 hover:to-gray-700 transition-all duration-300 transform hover:scale-105">
-                    Simpan Data
-                </button>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-warning">Simpan Data</button>
             </div>
         </form>
     </div>
