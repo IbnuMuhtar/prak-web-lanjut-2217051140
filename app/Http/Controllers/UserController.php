@@ -99,7 +99,7 @@ class UserController extends Controller
         $user = $this->userModel->getUser($id);
     
         $data = [
-            'title' => 'Profile',
+            'title' => 'Profile - ' . $user->nama,
             'user'  => $user,
         ];
     
@@ -136,13 +136,19 @@ class UserController extends Controller
         // Meng-handle upload foto
         if ($request->hasFile('foto')) {
             $foto = $request->file('foto');
-            
-            // Membuat nama file acak dengan extension asli
+
+            // Hapus foto lama jika ada
+            if ($user->foto && $user->foto !== 'assets/img/default.png') {
+                $oldPhotoPath = public_path($user->foto); // Mendapatkan path foto lama
+                if (file_exists($oldPhotoPath)) {
+                    unlink($oldPhotoPath); // Menghapus file lama
+                }
+            }
+
+            // Membuat nama file baru dan menyimpan
             $randomName = uniqid() . '.' . $foto->getClientOriginalExtension();
-            
-            // Menyimpan file di folder 'storage/app/public/uploads/img'
             $path = $foto->storeAs('public/uploads/img', $randomName);
-            
+
             // Menyimpan path foto ke database tanpa 'public/'
             $validatedData['foto'] = str_replace('public/', 'storage/', $path);
         } else {
@@ -166,5 +172,5 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->to('/user')->with('success', 'User has been deleted successfully');
-}
+    }
 }
