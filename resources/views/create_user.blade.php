@@ -39,7 +39,24 @@
                     <div class="text-danger mt-1">{{ $message }}</div>
                 @enderror
             </div>
+ <!-- Input Jurusan -->
+ <div class="mb-3">
+                <label for="jurusan" class="form-label text-light">Jurusan:</label>
+                <input type="text" name="jurusan" id="jurusan" class="form-control" placeholder="Masukkan Jurusan Anda" value="{{ old('jurusan') }}" style="background-color: #3b4a5a; color: #ffffff; border-radius: 10px; border: 1px solid #1abc9c;">
+                @error('jurusan')
+                    <div class="text-danger mt-1">{{ $message }}</div>
+                @enderror
+            </div>
 
+            <!-- Input Semester -->
+            <div class="mb-3">
+                <label for="semester" class="form-label text-light">Semester:</label>
+                <input type="number" name="semester" id="semester" class="form-control" placeholder="Masukkan Semester Anda" value="{{ old('semester') }}" style="background-color: #3b4a5a; color: #ffffff; border-radius: 10px; border: 1px solid #1abc9c;">
+                @error('semester')
+                    <div class="text-danger mt-1">{{ $message }}</div>
+                @enderror
+            </div>
+            
             <!-- Input Foto -->
             <div class="mb-3">
                 <label for="foto" class="form-label text-light">Foto:</label><br>

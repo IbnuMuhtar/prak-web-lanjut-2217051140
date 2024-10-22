@@ -55,45 +55,39 @@ class UserController extends Controller
     }
 
     public function store(Request $request)
-    {
-        // Validasi input
-        $validatedData = $request->validate([
-            'nama' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255',
-            'npm' => 'required|digits:10',
-            'kelas_id' => 'required|exists:kelas,id',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
-        ], [
-            'nama.regex' => 'Nama hanya boleh mengandung huruf.',
-            'npm.digits' => 'NPM harus 10 digit angka.',
-            'kelas_id.required' => 'Kelas harus dipilih.',
-        ]);
+{
+    // Validasi input
+    $validatedData = $request->validate([
+        'nama' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255',
+        'npm' => 'required|digits:10',
+        'kelas_id' => 'required|exists:kelas,id',
+        'semester' => 'required|integer|min:1|max:8',
+        'jurusan' => 'required|string|max:255',
+        'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
+    ], [
+        'nama.regex' => 'Nama hanya boleh mengandung huruf.',
+        'npm.digits' => 'NPM harus 10 digit angka.',
+        'kelas_id.required' => 'Kelas harus dipilih.',
+        'semester.required' => 'Semester harus diisi.',
+        'jurusan.required' => 'Jurusan harus diisi.',
+    ]);
 
-        // Meng-handle upload foto
-        if ($request->hasFile('foto')) {
-            $foto = $request->file('foto');
-            
-            // Membuat nama file acak dengan extension asli
-            $randomName = uniqid() . '.' . $foto->getClientOriginalExtension();
-            
-            // Menyimpan file di folder 'storage/app/public/uploads/img'
-            $path = $foto->storeAs('public/uploads/img', $randomName);
-            
-            // Menyimpan path foto ke database tanpa 'public/'
-            $validatedData['foto'] = str_replace('public/', 'storage/', $path);
-        } else {
-            // Jika tidak ada file yang di-upload, gunakan path default
-            $validatedData['foto'] = 'assets/img/default.png';
-        }
-
-        // Menyimpan data pengguna ke database
-        $user = $this->userModel->create($validatedData);
-
-        // Memuat relasi kelas dari model user
-        $user->load('kelas');
-
-        // Redirect ke halaman user dengan pesan sukses
-        return redirect()->to('/user')->with('success', 'User berhasil ditambahkan');
+    // Meng-handle upload foto
+    if ($request->hasFile('foto')) {
+        $foto = $request->file('foto');
+        $randomName = uniqid() . '.' . $foto->getClientOriginalExtension();
+        $path = $foto->storeAs('public/uploads/img', $randomName);
+        $validatedData['foto'] = str_replace('public/', 'storage/', $path);
+    } else {
+        $validatedData['foto'] = 'assets/img/default.png';
     }
+
+    // Menyimpan data pengguna ke database
+    $user = $this->userModel->create($validatedData);
+    $user->load('kelas');
+
+    return redirect()->to('/user')->with('success', 'User berhasil ditambahkan');
+}
 
     public function show($id){
         $user = $this->userModel->getUser($id);
@@ -117,54 +111,49 @@ class UserController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        // Validasi input
-        $validatedData = $request->validate([
-            'nama' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255',
-            'npm' => 'required|digits:10',
-            'kelas_id' => 'required|exists:kelas,id',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
-        ], [
-            'nama.regex' => 'Nama hanya boleh mengandung huruf.',
-            'npm.digits' => 'NPM harus 10 digit angka.',
-            'kelas_id.required' => 'Kelas harus dipilih.',
-        ]);
+{
+    // Validasi input
+    $validatedData = $request->validate([
+        'nama' => 'required|string|regex:/^[a-zA-Z\s]+$/|max:255',
+        'npm' => 'required|digits:10',
+        'kelas_id' => 'required|exists:kelas,id',
+        'semester' => 'required|integer|min:1|max:8',
+        'jurusan' => 'required|string|max:255',
+        'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
+    ], [
+        'nama.regex' => 'Nama hanya boleh mengandung huruf.',
+        'npm.digits' => 'NPM harus 10 digit angka.',
+        'kelas_id.required' => 'Kelas harus dipilih.',
+        'semester.required' => 'Semester harus diisi.',
+        'jurusan.required' => 'Jurusan harus diisi.',
+    ]);
 
-        // Mencari user berdasarkan id
-        $user = UserModel::findOrFail($id);
+    $user = UserModel::findOrFail($id);
 
-        // Meng-handle upload foto
-        if ($request->hasFile('foto')) {
-            $foto = $request->file('foto');
-
-            // Hapus foto lama jika ada
-            if ($user->foto && $user->foto !== 'assets/img/default.png') {
-                $oldPhotoPath = public_path($user->foto); // Mendapatkan path foto lama
-                if (file_exists($oldPhotoPath)) {
-                    unlink($oldPhotoPath); // Menghapus file lama
-                }
+    // Meng-handle upload foto
+    if ($request->hasFile('foto')) {
+        $foto = $request->file('foto');
+        if ($user->foto && $user->foto !== 'assets/img/default.png') {
+            $oldPhotoPath = public_path($user->foto);
+            if (file_exists($oldPhotoPath)) {
+                unlink($oldPhotoPath);
             }
-
-            // Membuat nama file baru dan menyimpan
-            $randomName = uniqid() . '.' . $foto->getClientOriginalExtension();
-            $path = $foto->storeAs('public/uploads/img', $randomName);
-
-            // Menyimpan path foto ke database tanpa 'public/'
-            $validatedData['foto'] = str_replace('public/', 'storage/', $path);
-        } else {
-            // Jika tidak ada file yang di-upload, tetap gunakan foto yang sudah ada atau default
-            $validatedData['foto'] = $user->foto ?: 'assets/img/default.png';
         }
 
-        // Update data user
-        $user->update($validatedData);
-
-        // Memuat relasi kelas dari model user
-        $user->load('kelas');
-
-        // Redirect ke halaman user dengan pesan sukses
-        return redirect()->to('/user')->with('success', 'User berhasil diperbarui');
+        $randomName = uniqid() . '.' . $foto->getClientOriginalExtension();
+        $path = $foto->storeAs('public/uploads/img', $randomName);
+        $validatedData['foto'] = str_replace('public/', 'storage/', $path);
+    } else {
+        $validatedData['foto'] = $user->foto ?: 'assets/img/default.png';
     }
+
+    // Update data user
+    $user->update($validatedData);
+    $user->load('kelas');
+
+    return redirect()->to('/user')->with('success', 'User berhasil diperbarui');
+}
+
 
     public function destroy($id)
     {

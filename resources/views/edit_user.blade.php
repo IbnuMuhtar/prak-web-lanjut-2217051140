@@ -26,6 +26,17 @@
                 @endforeach
             </select>
         </div>
+        <!-- Jurusan -->
+        <div class="form-group mb-3">
+            <label for="jurusan" class="form-label">Jurusan</label>
+            <input type="text" class="form-control" name="jurusan" id="jurusan" value="{{ old('jurusan', $user->jurusan) }}" required>
+        </div>
+        
+        <!-- Semester -->
+        <div class="form-group mb-3">
+            <label for="semester" class="form-label">Semester</label>
+            <input type="number" class="form-control" name="semester" id="semester" value="{{ old('semester', $user->semester) }}" min="1" max="8" required>
+        </div>
         <div class="form-group">
             <label for="foto" class="form-label">Foto</label>
             <input type="file" name="foto" class="form-control">

@@ -10,8 +10,9 @@
             </div>
 
             <h3 class="font-weight-bold mb-3" style="color: #FFFFFF;">{{ $user->nama }}</h3> <!-- Font color changed to white -->
-            <p class="text-light mb-2"><strong style="color: #FFFFFF;">{{ $user->npm }}</strong></p> <!-- Font color changed to white -->
-            <p class="text-light mb-2"><strong style="color: #FFFFFF;">{{ $user->nama_kelas ?? 'Kelas tidak ditemukan' }}</strong></p> <!-- Font color changed to white -->
+            <p class="text-light mb-2"><strong style="color: #FFFFFF;">{{ $user->npm }}</strong></p> <!-- Font color changed to white --> <p class="text-light mb-2"><strong style="color: #FFFFFF;">{{ $user->nama_kelas ?? 'Kelas tidak ditemukan' }}</strong></p> <!-- Font color changed to white -->
+            <p class="text-light mb-2"><strong style="color: #FFFFFF;">{{ $user->jurusan }}</strong></p> 
+            <p class="text-light mb-2"><strong style="color: #FFFFFF;">{{ $user->semester}}</strong></p> 
         </div>
     </div>
 </div>
